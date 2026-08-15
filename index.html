@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RevistaFit · dónde encaja tu manuscrito</title>
+<meta name="description" content="Selección de revista basada en dónde se publica realmente la literatura similar, con prioridades ajustables y carta de presentación. UMH.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{
+  --ink:#12222B; --ink2:#1B3440; --ink3:#27454F;
+  --paper:#FBFAF7; --paper2:#F2EFE8; --paper3:#E8E4DA;
+  --plum:#5B4A87; --plum-d:#453769; --plum-l:#E6E1F0;
+  --petrol:#0E6E78; --ochre:#B8722A; --ochre-l:#F7E9D4;
+  --muted:#67787F; --line:#DED9CF; --alert:#A33B2A; --ok:#2E6B4F;
+  --serif:'IBM Plex Serif',Georgia,serif;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --r:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--plum)}
+::selection{background:var(--plum-l)}
+
+header.top{position:sticky;top:0;z-index:60;background:var(--ink);color:var(--paper);border-bottom:1px solid #000}
+.top-in{max-width:1240px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-family:var(--serif);font-weight:600;font-size:20px;letter-spacing:-.2px}
+.brand em{font-style:italic;color:var(--ochre);font-weight:400}
+.brand-sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#8FA6AD}
+.sp{flex:1}
+.tbtn{background:transparent;border:1px solid #38545F;color:#CFE0E3;padding:6px 12px;border-radius:var(--r);font-size:12.5px;cursor:pointer}
+.tbtn:hover{border-color:var(--plum);background:#0d2a33}
+
+main{max-width:1240px;margin:0 auto;padding:26px 20px 90px}
+section.blk{margin-bottom:36px}
+h2.sec{font-family:var(--serif);font-size:23px;font-weight:600;margin:0 0 4px;letter-spacing:-.3px}
+p.lead{color:var(--muted);margin:0 0 18px;max-width:72ch;font-size:14px}
+
+.btn{background:var(--plum);color:#fff;border:1px solid var(--plum-d);padding:9px 18px;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer}
+.btn:hover{background:var(--plum-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{background:var(--paper2)}
+.btn.sm{padding:5px 11px;font-size:12.5px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.status{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid var(--line);border-top-color:var(--plum);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+textarea.ms{width:100%;min-height:190px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r);font-family:var(--serif);font-size:14.5px;line-height:1.6;background:#fff;color:var(--ink);resize:vertical}
+textarea.ms:focus{outline:0;border-color:var(--plum)}
+.f label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.f input,.f select,.f textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r);background:#fff;font-family:var(--sans);font-size:14px;color:var(--ink)}
+.f input:focus,.f select:focus{outline:0;border-color:var(--plum)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px 18px}
+
+/* ficha del manuscrito */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:6px 14px;font-size:13.5px}
+.kv dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.kv dd{margin:0}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border:1px solid var(--line);border-radius:99px;margin:0 5px 5px 0;background:var(--paper2)}
+
+/* consola de prioridades — elemento firma */
+.console{background:var(--ink);color:var(--paper);border-radius:var(--r);padding:20px 22px;position:sticky;top:64px}
+.console h3{font-family:var(--serif);font-size:17px;margin:0 0 3px;font-weight:600;color:#fff}
+.console .sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#7E969E;margin-bottom:16px}
+.sl{margin-bottom:14px}
+.sl .lb{display:flex;justify-content:space-between;font-size:12.5px;color:#C7D8DC;margin-bottom:4px}
+.sl .lb b{font-family:var(--mono);font-size:11px;color:#fff;font-weight:500}
+.sl input[type=range]{width:100%;accent-color:var(--ochre);height:3px}
+.legend{margin-top:16px;padding-top:14px;border-top:1px solid #2C4854;font-size:11.5px;color:#8FA6AD;line-height:1.5}
+.swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+.layout{display:grid;grid-template-columns:1fr 300px;gap:26px;align-items:start}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.console{position:static}}
+
+/* revistas */
+.jrn{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;transition:box-shadow .15s}
+.jrn:hover{box-shadow:0 2px 0 var(--paper3)}
+.jrn-head{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.rank{font-family:var(--mono);font-size:12px;color:#fff;background:var(--plum);border-radius:2px;padding:2px 7px;flex:none}
+.jname{font-family:var(--serif);font-size:17.5px;font-weight:600;line-height:1.25;flex:1;min-width:200px}
+.jname a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
+.score{font-family:var(--mono);font-size:19px;font-weight:600;color:var(--plum)}
+.jmeta{font-size:12.5px;color:var(--muted);margin:4px 0 10px}
+.spec{display:flex;height:8px;border-radius:2px;overflow:hidden;background:var(--paper2);margin:10px 0 8px}
+.spec i{display:block;height:100%}
+.mini{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.mini b{color:var(--ink);font-weight:600}
+.why{font-size:13.5px;margin:10px 0 0}
+.risk{font-size:13px;color:var(--alert);margin:6px 0 0}
+.ev{margin-top:10px;border-top:1px dotted var(--line);padding-top:9px}
+.ev summary{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--petrol);cursor:pointer}
+.ev ul{margin:8px 0 0;padding-left:18px;font-size:12.5px;color:var(--muted)}
+.ev li{margin-bottom:4px}
+.badge{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:2px;margin-left:6px}
+.badge.oa{background:#DFF0E6;color:var(--ok)}
+.badge.apc{background:var(--ochre-l);color:var(--ochre)}
+.badge.free{background:var(--plum-l);color:var(--plum-d)}
+
+.panel{background:var(--paper2);border:1px solid var(--line);border-left:3px solid var(--ochre);padding:13px 16px;border-radius:var(--r);margin-bottom:18px;font-size:13.5px}
+.panel h4{margin:0 0 5px;font-size:12px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ochre)}
+
+.mask{position:fixed;inset:0;background:rgba(18,34,43,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.mask.on{display:flex}
+.modal{background:var(--paper);border-radius:var(--r);max-width:680px;width:100%;max-height:88vh;overflow:auto;padding:26px 28px;border:1px solid var(--line)}
+.modal h3{font-family:var(--serif);font-size:20px;margin:0 0 4px;font-weight:600}
+.modal .close{float:right;background:none;border:0;font-size:22px;cursor:pointer;color:var(--muted)}
+.hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+.letter{background:#fff;border:1px solid var(--line);padding:26px 30px;font-family:var(--serif);font-size:14.5px;line-height:1.7;white-space:pre-wrap;border-radius:var(--r);max-height:52vh;overflow:auto}
+.letter[contenteditable]:focus{outline:1px dashed var(--ochre);outline-offset:6px}
+
+footer{border-top:1px solid var(--line);padding:22px 20px;text-align:center;font-size:12px;color:var(--muted);font-family:var(--mono)}
+@media(max-width:720px){main{padding:20px 14px 70px}.kv{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div>
+      <div class="brand">Revista<em>Fit</em></div>
+      <div class="brand-sub">dónde se publica realmente lo que tú has escrito</div>
+    </div>
+    <div class="sp"></div>
+    <button class="tbtn" id="btnProj">Búsquedas guardadas</button>
+    <button class="tbtn" id="btnCfg">Modelo y clave</button>
+  </div>
+</header>
+
+<main>
+
+<section class="blk" id="s1">
+  <h2 class="sec">Tu manuscrito</h2>
+  <p class="lead">Pega el título y el resumen, o sube el documento completo. RevistaFit no adivina revistas: busca en OpenAlex los artículos que de verdad se parecen al tuyo y mira dónde se publicaron. Cada revista que verás viene acompañada de los artículos concretos que la sitúan ahí.</p>
+
+  <textarea class="ms" id="msText" placeholder="Título&#10;&#10;Resumen: antecedentes, objetivo, diseño, participantes, variables, principales resultados…&#10;&#10;Palabras clave: …"></textarea>
+
+  <div class="row" style="margin-top:12px">
+    <button class="btn ghost sm" id="btnUp">Subir .docx, .pdf, .md o .txt</button>
+    <input type="file" id="file" accept=".docx,.pdf,.md,.txt" hidden>
+    <span class="status" id="upStat"></span>
+  </div>
+
+  <div class="grid" style="margin-top:20px">
+    <div class="f"><label>Tipo de artículo</label>
+      <select id="cType">
+        <option>Artículo original</option><option>Revisión sistemática</option><option>Revisión narrativa</option>
+        <option>Estudio de casos</option><option>Artículo metodológico</option><option>Carta / comentario</option>
+      </select></div>
+    <div class="f"><label>Ventana temporal de la búsqueda</label>
+      <select id="cYears"><option value="2020">Últimos 6 años</option><option value="2017">Últimos 9 años</option><option value="2010">Desde 2010</option></select></div>
+    <div class="f"><label>Descartar revistas sin acceso abierto</label>
+      <select id="cOA"><option value="no">No, muéstralas todas</option><option value="si">Sí, solo acceso abierto</option></select></div>
+    <div class="f"><label>Tope de APC que aceptas (USD)</label>
+      <input type="number" id="cApc" placeholder="sin tope" min="0" step="100"></div>
+  </div>
+
+  <div class="row" style="margin-top:20px">
+    <button class="btn" id="btnRun">Buscar revistas</button>
+    <span class="status" id="runStat"></span>
+  </div>
+</section>
+
+<section class="blk" id="s2" style="display:none">
+  <h2 class="sec">Lectura del manuscrito</h2>
+  <div class="card" id="fiche"></div>
+</section>
+
+<section class="blk" id="s3" style="display:none">
+  <h2 class="sec">Revistas candidatas</h2>
+  <p class="lead">Mueve las prioridades y la lista se reordena al instante. El ajuste temático lo valora el modelo; el resto de cifras vienen de OpenAlex y son comprobables.</p>
+
+  <div class="layout">
+    <div id="jrns"></div>
+
+    <aside class="console">
+      <h3>Tus prioridades</h3>
+      <div class="sub">la lista se reordena al moverlas</div>
+      <div class="sl"><div class="lb"><span>Ajuste temático</span><b id="wFit">40</b></div><input type="range" id="rFit" min="0" max="100" value="40"></div>
+      <div class="sl"><div class="lb"><span>Impacto citacional</span><b id="wImp">25</b></div><input type="range" id="rImp" min="0" max="100" value="25"></div>
+      <div class="sl"><div class="lb"><span>Evidencia de encaje</span><b id="wEvi">20</b></div><input type="range" id="rEvi" min="0" max="100" value="20"></div>
+      <div class="sl"><div class="lb"><span>Acceso abierto</span><b id="wOa">10</b></div><input type="range" id="rOa" min="0" max="100" value="10"></div>
+      <div class="sl"><div class="lb"><span>Coste asumible</span><b id="wApc">5</b></div><input type="range" id="rApc" min="0" max="100" value="5"></div>
+      <div class="legend">
+        <div><span class="swatch" style="background:#5B4A87"></span>ajuste temático</div>
+        <div><span class="swatch" style="background:#0E6E78"></span>impacto citacional</div>
+        <div><span class="swatch" style="background:#B8722A"></span>evidencia de encaje</div>
+        <div><span class="swatch" style="background:#2E6B4F"></span>acceso abierto</div>
+        <div><span class="swatch" style="background:#8B95A0"></span>coste</div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="panel" style="margin-top:22px">
+    <h4>Qué significan estas cifras</h4>
+    La <b>citación media a 2 años</b> es el indicador de OpenAlex, no el factor de impacto del JCR: se le parece, pero no es intercambiable ni sirve para acreditaciones. El <b>APC</b> es el precio de lista publicado; los descuentos por acuerdo institucional (CRUE, consorcios) no aparecen aquí. El <b>tiempo de revisión</b> no lo publica OpenAlex, así que RevistaFit no lo inventa: consúltalo en la web de la revista antes de decidir.
+  </div>
+</section>
+
+</main>
+
+<footer>RevistaFit · Fernando Borrás · Universidad Miguel Hernández de Elche · datos bibliográficos de OpenAlex (CC0)</footer>
+
+<div class="mask" id="mCfg"><div class="modal">
+  <button class="close" data-x>&times;</button>
+  <h3>Modelo y clave</h3>
+  <p class="hint">La clave se guarda en <code>localStorage</code> con el nombre <code>ia_openai_key</code>. La búsqueda en OpenAlex no necesita clave.</p>
+  <div class="grid" style="margin-top:16px">
+    <div class="f"><label>Proveedor</label><select id="pProv"><option value="openai">OpenAI</option><option value="ollama">Ollama local</option></select></div>
+    <div class="f"><label>Modelo</label><input type="text" id="pModel" placeholder="gpt-4o"></div>
+    <div class="f" style="grid-column:1/-1"><label>Clave API</label><input type="text" id="pKey" placeholder="sk-..."></div>
+    <div class="f" style="grid-column:1/-1"><label>URL base de Ollama</label><input type="text" id="pUrl" placeholder="http://localhost:11434"></div>
+    <div class="f" style="grid-column:1/-1"><label>Correo para el acceso cortés de OpenAlex (opcional)</label><input type="text" id="pMail" placeholder="tu@universidad.es"></div>
+  </div>
+  <div class="row" style="margin-top:18px"><button class="btn" id="pSave">Guardar</button><span class="status" id="pStat"></span></div>
+</div></div>
+
+<div class="mask" id="mLetter"><div class="modal" style="max-width:760px">
+  <button class="close" data-x>&times;</button>
+  <h3 id="lTitle">Carta de presentación</h3>
+  <p class="hint" id="lSub"></p>
+  <div class="grid" style="margin:14px 0">
+    <div class="f"><label>Autor/a de correspondencia</label><input type="text" id="lAuthor" placeholder="Fernando Borrás Rocher"></div>
+    <div class="f"><label>Afiliación</label><input type="text" id="lAff" placeholder="Universidad Miguel Hernández de Elche"></div>
+    <div class="f"><label>Editor/a (si lo conoces)</label><input type="text" id="lEditor" placeholder="Dr. …"></div>
+    <div class="f"><label>Idioma</label><select id="lLang"><option value="en">Inglés</option><option value="es">Español</option></select></div>
+  </div>
+  <div class="row" style="margin-bottom:14px">
+    <button class="btn" id="lGen">Redactar carta</button>
+    <button class="btn ghost" id="lDocx">Descargar .docx</button>
+    <button class="btn ghost" id="lCopy">Copiar</button>
+    <span class="status" id="lStat"></span>
+  </div>
+  <div class="letter" id="lBody" contenteditable="true">Pulsa «Redactar carta» para generarla con los datos de esta revista.</div>
+</div></div>
+
+<div class="mask" id="mProj"><div class="modal">
+  <button class="close" data-x>&times;</button>
+  <h3>Búsquedas guardadas</h3>
+  <p class="hint">Guardadas en IndexedDB, en este navegador.</p>
+  <div id="projList" style="margin-top:14px"></div>
+</div></div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const S = { text:"", fiche:null, journals:[], projectId:null, active:null };
+
+/* ---------- preferencias ---------- */
+const CFG = {
+  get prov(){ return localStorage.getItem("ia_provider") || "openai"; },
+  get model(){ return localStorage.getItem("ia_model") || "gpt-4o"; },
+  get key(){ return localStorage.getItem("ia_openai_key") || ""; },
+  get url(){ return localStorage.getItem("ia_ollama_url") || "http://localhost:11434"; },
+  get mail(){ return localStorage.getItem("ia_openalex_mail") || ""; }
+};
+function loadCfg(){ $("#pProv").value=CFG.prov; $("#pModel").value=CFG.model; $("#pKey").value=CFG.key; $("#pUrl").value=CFG.url; $("#pMail").value=CFG.mail; }
+$("#pSave").onclick = () => {
+  localStorage.setItem("ia_provider", $("#pProv").value);
+  localStorage.setItem("ia_model", $("#pModel").value.trim() || "gpt-4o");
+  localStorage.setItem("ia_openai_key", $("#pKey").value.trim());
+  localStorage.setItem("ia_ollama_url", $("#pUrl").value.trim() || "http://localhost:11434");
+  localStorage.setItem("ia_openalex_mail", $("#pMail").value.trim());
+  $("#pStat").textContent="Guardado."; setTimeout(()=>{$("#pStat").textContent="";$("#mCfg").classList.remove("on");},700);
+};
+$("#btnCfg").onclick = () => { loadCfg(); $("#mCfg").classList.add("on"); };
+$$(".mask").forEach(m => { m.addEventListener("click", e=>{ if(e.target===m) m.classList.remove("on"); }); const x=m.querySelector("[data-x]"); if(x) x.onclick=()=>m.classList.remove("on"); });
+document.addEventListener("keydown", e => { if(e.key==="Escape") $$(".mask").forEach(m=>m.classList.remove("on")); });
+
+/* ---------- carga de documento ---------- */
+$("#btnUp").onclick = () => $("#file").click();
+$("#file").onchange = async e => {
+  const f = e.target.files[0]; if(!f) return;
+  $("#upStat").innerHTML = '<span class="spin"></span>Leyendo…';
+  try{
+    let txt = "";
+    if(/\.docx$/i.test(f.name)){
+      const buf = await f.arrayBuffer();
+      txt = (await mammoth.extractRawText({arrayBuffer:buf})).value;
+    } else if(/\.pdf$/i.test(f.name)){
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      const pdf = await pdfjsLib.getDocument({data: await f.arrayBuffer()}).promise;
+      const n = Math.min(pdf.numPages, 6);
+      for(let i=1;i<=n;i++){ const p = await pdf.getPage(i); const c = await p.getTextContent(); txt += c.items.map(t=>t.str).join(" ") + "\n"; }
+    } else { txt = await f.text(); }
+    $("#msText").value = txt.slice(0, 20000).trim();
+    $("#upStat").textContent = f.name + " · " + $("#msText").value.length + " caracteres";
+  }catch(err){ $("#upStat").textContent = "No se pudo leer ese archivo: " + err.message; }
+};
+
+/* ---------- modelo ---------- */
+async function callModel(messages, json=true){
+  if(CFG.prov === "openai"){
+    if(!CFG.key) throw new Error("Falta la clave de OpenAI. Ábrela en «Modelo y clave».");
+    const body = { model:CFG.model, messages, temperature:0.3 };
+    if(json) body.response_format = {type:"json_object"};
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+      method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+CFG.key}, body:JSON.stringify(body) });
+    if(!r.ok) throw new Error("OpenAI respondió " + r.status + ": " + (await r.text()).slice(0,300));
+    return (await r.json()).choices[0].message.content;
+  } else {
+    const r = await fetch(CFG.url.replace(/\/$/,"") + "/api/chat", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ model:CFG.model, messages, stream:false, format: json?"json":undefined, options:{temperature:0.3} }) });
+    if(!r.ok) throw new Error("Ollama respondió " + r.status + ". ¿Está corriendo en " + CFG.url + "?");
+    return (await r.json()).message.content;
+  }
+}
+const parseJson = raw => JSON.parse(String(raw).replace(/^```(?:json)?/i,"").replace(/```$/,"").trim());
+
+/* ---------- OpenAlex ---------- */
+const OA = "https://api.openalex.org";
+const mailq = () => CFG.mail ? "&mailto=" + encodeURIComponent(CFG.mail) : "";
+async function oaGet(path){
+  const r = await fetch(OA + path + mailq());
+  if(!r.ok) throw new Error("OpenAlex respondió " + r.status);
+  return r.json();
+}
+const PREPRINT = /arxiv|biorxiv|medrxiv|ssrn|research square|preprints|zenodo|osf|hal|repec|working paper/i;
+
+async function findJournals(queries, fromYear){
+  const tally = new Map();
+  for(const q of queries){
+    let d;
+    try{
+      d = await oaGet(`/works?search=${encodeURIComponent(q)}&per_page=25&filter=from_publication_date:${fromYear}-01-01,type:article&sort=relevance_score:desc`);
+    }catch(e){ continue; }
+    (d.results||[]).forEach((w, i) => {
+      const src = w.primary_location && w.primary_location.source;
+      if(!src || !src.id) return;
+      if(src.type !== "journal") return;
+      if(PREPRINT.test(src.display_name||"")) return;
+      const id = src.id.split("/").pop();
+      if(!tally.has(id)) tally.set(id, { id, name: src.display_name, hits:0, weight:0, works:[] });
+      const t = tally.get(id);
+      t.hits++; t.weight += 1/(1+i*0.12);
+      if(t.works.length < 4) t.works.push({ title:w.title, year:w.publication_year, cites:w.cited_by_count, doi:w.doi });
+    });
+    await new Promise(r => setTimeout(r, 120));
+  }
+  return Array.from(tally.values()).sort((a,b) => b.weight - a.weight).slice(0, 14);
+}
+
+async function enrich(cands){
+  const out = [];
+  for(const c of cands){
+    try{
+      const s = await oaGet(`/sources/${c.id}`);
+      const ss = s.summary_stats || {};
+      out.push({
+        ...c,
+        name: s.display_name || c.name,
+        publisher: s.host_organization_name || "",
+        issn: s.issn_l || (s.issn && s.issn[0]) || "",
+        oa: !!(s.is_oa || s.is_in_doaj),
+        doaj: !!s.is_in_doaj,
+        apc: (s.apc_usd != null ? s.apc_usd : (s.apc_prices && s.apc_prices[0] ? s.apc_prices[0].price : null)),
+        cite2: ss["2yr_mean_citedness"] || 0,
+        h: ss.h_index || 0,
+        works: s.works_count || 0,
+        home: s.homepage_url || "",
+        topics: (s.topics||[]).slice(0,5).map(t => t.display_name),
+        examples: c.works
+      });
+    }catch(e){ /* si una fuente falla, seguimos con las demás */ }
+    await new Promise(r => setTimeout(r, 90));
+  }
+  return out;
+}
+
+/* ---------- flujo principal ---------- */
+$("#btnRun").onclick = async () => {
+  const txt = $("#msText").value.trim();
+  if(txt.length < 120){ alert("Necesito al menos el título y el resumen para buscar algo con sentido."); return; }
+  S.text = txt;
+  const btn = $("#btnRun"); btn.disabled = true;
+  const st = $("#runStat");
+
+  try{
+    st.innerHTML = '<span class="spin"></span>Leyendo el manuscrito…';
+    const f = parseJson(await callModel([
+      {role:"system", content:`Analizas manuscritos científicos para decidir dónde enviarlos. Devuelve SOLO JSON:
+{"titulo":"","disciplina":"","subcampo":"","diseno":"","poblacion":"","variable_principal":"","idioma":"",
+ "palabras_clave":["5-8 términos en inglés"],
+ "resumen_120":"resumen del manuscrito en 120 palabras, en inglés",
+ "consultas":["6 consultas de búsqueda en inglés, de 3 a 8 palabras cada una, que recuperen artículos MUY parecidos a este: la primera muy específica, las últimas algo más amplias"]}
+No inventes datos que no estén en el texto: si algo no consta, deja la cadena vacía.`},
+      {role:"user", content: `Tipo de artículo declarado: ${$("#cType").value}\n\nMANUSCRITO:\n${txt.slice(0,14000)}`}
+    ]));
+    S.fiche = f;
+    renderFiche(f);
+    $("#s2").style.display = "";
+
+    st.innerHTML = '<span class="spin"></span>Buscando literatura similar en OpenAlex…';
+    const cands = await findJournals(f.consultas || [], $("#cYears").value);
+    if(!cands.length) throw new Error("OpenAlex no ha devuelto artículos parecidos. Prueba a añadir el resumen completo o palabras clave más habituales en inglés.");
+
+    st.innerHTML = '<span class="spin"></span>Recuperando datos de ' + cands.length + ' revistas…';
+    let jr = await enrich(cands);
+
+    if($("#cOA").value === "si") jr = jr.filter(j => j.oa);
+    const tope = parseFloat($("#cApc").value);
+    if(isFinite(tope)) jr = jr.filter(j => j.apc == null || j.apc <= tope);
+    if(!jr.length) throw new Error("Ninguna revista pasa los filtros de acceso abierto o APC que has puesto. Aflójalos y repite.");
+
+    st.innerHTML = '<span class="spin"></span>Valorando el ajuste temático…';
+    const scored = parseJson(await callModel([
+      {role:"system", content:`Eres editor científico con experiencia. Valoras si un manuscrito encaja en el alcance de cada revista.
+Devuelve SOLO JSON: {"revistas":[{"id":"S...","ajuste":0-100,"motivo":"una frase concreta sobre por qué encaja o no","riesgo":"el motivo más probable de rechazo de escritorio en esta revista, o cadena vacía"}]}
+Sé exigente: reserva ajustes por encima de 85 para coincidencias muy claras de tema Y de tipo de estudio. Si no conoces bien una revista, dilo en el motivo y puntúa con prudencia. No inventes factores de impacto ni tiempos de revisión.`},
+      {role:"user", content: `MANUSCRITO\nTítulo: ${f.titulo}\nDisciplina: ${f.disciplina} / ${f.subcampo}\nDiseño: ${f.diseno}\nResumen: ${f.resumen_120}\nTipo: ${$("#cType").value}\n\nREVISTAS\n${jr.map(j=>`${j.id} | ${j.name} | editorial: ${j.publisher} | temas indexados: ${j.topics.join(", ")||"n/d"}`).join("\n")}`}
+    ]));
+    const map = {}; (scored.revistas||[]).forEach(r => map[r.id] = r);
+    jr.forEach(j => { const m = map[j.id] || {}; j.fit = m.ajuste != null ? m.ajuste : 50; j.why = m.motivo || ""; j.risk = m.riesgo || ""; });
+
+    S.journals = jr;
+    $("#s3").style.display = "";
+    rank();
+    st.textContent = "";
+    $("#s3").scrollIntoView({behavior:"smooth"});
+    saveProject();
+  }catch(err){
+    st.textContent = "";
+    alert("La búsqueda se ha detenido: " + err.message);
+  }finally{ btn.disabled = false; }
+};
+
+function renderFiche(f){
+  $("#fiche").innerHTML = `<dl class="kv">
+    <dt>Título</dt><dd>${esc(f.titulo||"(no detectado)")}</dd>
+    <dt>Campo</dt><dd>${esc(f.disciplina||"—")}${f.subcampo?" · "+esc(f.subcampo):""}</dd>
+    <dt>Diseño</dt><dd>${esc(f.diseno||"—")}</dd>
+    <dt>Población</dt><dd>${esc(f.poblacion||"—")}</dd>
+    <dt>Variable principal</dt><dd>${esc(f.variable_principal||"—")}</dd>
+    <dt>Descriptores</dt><dd>${(f.palabras_clave||[]).map(k=>`<span class="tag">${esc(k)}</span>`).join("")}</dd>
+    <dt>Consultas</dt><dd>${(f.consultas||[]).map(q=>`<span class="tag">${esc(q)}</span>`).join("")}</dd>
+  </dl>`;
+}
+
+/* ---------- ranking ponderado ---------- */
+const W = () => ({ fit:+$("#rFit").value, imp:+$("#rImp").value, evi:+$("#rEvi").value, oa:+$("#rOa").value, apc:+$("#rApc").value });
+["rFit","rImp","rEvi","rOa","rApc"].forEach(id => $("#"+id).addEventListener("input", () => {
+  $("#wFit").textContent=$("#rFit").value; $("#wImp").textContent=$("#rImp").value;
+  $("#wEvi").textContent=$("#rEvi").value; $("#wOa").textContent=$("#rOa").value; $("#wApc").textContent=$("#rApc").value;
+  rank();
+}));
+
+function rank(){
+  const J = S.journals; if(!J.length) return;
+  const maxC = Math.max(...J.map(j=>j.cite2), 0.001);
+  const maxW = Math.max(...J.map(j=>j.weight), 0.001);
+  const w = W(); const tot = Math.max(1, w.fit+w.imp+w.evi+w.oa+w.apc);
+
+  J.forEach(j => {
+    const parts = {
+      fit: (j.fit||0)/100,
+      imp: Math.min(1, Math.sqrt(j.cite2/maxC)),
+      evi: j.weight/maxW,
+      oa:  j.oa ? 1 : 0,
+      apc: j.apc == null ? 0.55 : (j.apc === 0 ? 1 : Math.max(0, 1 - j.apc/4000))
+    };
+    j.parts = parts;
+    j.seg = { fit:w.fit*parts.fit, imp:w.imp*parts.imp, evi:w.evi*parts.evi, oa:w.oa*parts.oa, apc:w.apc*parts.apc };
+    j.total = Math.round((j.seg.fit+j.seg.imp+j.seg.evi+j.seg.oa+j.seg.apc) / tot * 100);
+  });
+  J.sort((a,b) => b.total - a.total);
+
+  const COL = { fit:"#5B4A87", imp:"#0E6E78", evi:"#B8722A", oa:"#2E6B4F", apc:"#8B95A0" };
+  $("#jrns").innerHTML = J.map((j,i) => {
+    const segs = Object.keys(COL).map(k => {
+      const pct = j.total ? (j.seg[k] / (j.seg.fit+j.seg.imp+j.seg.evi+j.seg.oa+j.seg.apc || 1)) * 100 : 0;
+      return pct > 0.4 ? `<i style="width:${pct}%;background:${COL[k]}" title="${k}"></i>` : "";
+    }).join("");
+    const apcTxt = j.apc == null ? `<span class="badge free">APC no publicado</span>`
+      : (j.apc === 0 ? `<span class="badge free">sin APC</span>` : `<span class="badge apc">APC ${j.apc.toLocaleString("es-ES")} USD</span>`);
+    return `
+    <div class="jrn">
+      <div class="jrn-head">
+        <span class="rank">${i+1}</span>
+        <div class="jname">${j.home?`<a href="${esc(j.home)}" target="_blank" rel="noopener">${esc(j.name)}</a>`:esc(j.name)}
+          ${j.oa?'<span class="badge oa">acceso abierto</span>':""}${apcTxt}</div>
+        <div class="score">${j.total}</div>
+      </div>
+      <div class="jmeta">${esc(j.publisher||"editorial no consta")}${j.issn?" · ISSN "+esc(j.issn):""}</div>
+      <div class="spec">${segs}</div>
+      <div class="mini">
+        <span>citación 2 años <b>${j.cite2.toFixed(2)}</b></span>
+        <span>índice h <b>${j.h}</b></span>
+        <span>artículos <b>${j.works.toLocaleString("es-ES")}</b></span>
+        <span>ajuste <b>${j.fit}</b></span>
+        <span>coincidencias <b>${j.hits}</b></span>
+      </div>
+      ${j.why?`<p class="why">${esc(j.why)}</p>`:""}
+      ${j.risk?`<p class="risk">Riesgo: ${esc(j.risk)}</p>`:""}
+      <details class="ev"><summary>Artículos que la sitúan aquí (${j.examples.length})</summary>
+        <ul>${j.examples.map(e=>`<li>${esc(e.title||"")} <span style="color:#9AA7AC">(${e.year||"s.f."}, ${e.cites||0} citas)</span>${e.doi?` · <a href="${esc(e.doi)}" target="_blank" rel="noopener">DOI</a>`:""}</li>`).join("")}</ul>
+      </details>
+      <div class="row" style="margin-top:12px"><button class="btn sm" data-letter="${j.id}">Escribir carta de presentación</button></div>
+    </div>`;
+  }).join("");
+
+  $$("#jrns [data-letter]").forEach(b => b.onclick = () => openLetter(b.dataset.letter));
+}
+
+/* ---------- carta de presentación ---------- */
+function openLetter(id){
+  S.active = S.journals.find(j => j.id === id);
+  $("#lTitle").textContent = "Carta de presentación";
+  $("#lSub").textContent = S.active.name + (S.active.publisher ? " · " + S.active.publisher : "");
+  $("#lBody").textContent = "Pulsa «Redactar carta» para generarla con los datos de esta revista.";
+  $("#mLetter").classList.add("on");
+}
+$("#lGen").onclick = async () => {
+  const j = S.active, f = S.fiche; if(!j) return;
+  $("#lStat").innerHTML = '<span class="spin"></span>Redactando…';
+  try{
+    const txt = await callModel([
+      {role:"system", content:`Redactas cartas de presentación para envíos a revistas científicas. Una página, cuatro o cinco párrafos: qué se envía y a qué sección, qué pregunta responde y qué aporta de nuevo, por qué esta revista en concreto, y las declaraciones de rigor (originalidad, no envío simultáneo, conformidad de todos los autores, conflictos de interés, aprobación ética si el estudio la requiere).
+Tono sobrio y profesional. Sin adjetivos grandilocuentes, sin "groundbreaking" ni "paradigm-shifting". No inventes datos, cifras ni nombres que no te den. Deja como [corchetes] lo que el autor deba completar.
+Devuelve solo el texto de la carta, sin markdown ni encabezados de formato.`},
+      {role:"user", content: `REVISTA: ${j.name} (${j.publisher||"editorial no consta"}). Temas que indexa: ${j.topics.join(", ")||"n/d"}.
+EDITOR: ${$("#lEditor").value.trim() || "[Editor-in-Chief]"}
+AUTOR DE CORRESPONDENCIA: ${$("#lAuthor").value.trim() || "[autor]"} — ${$("#lAff").value.trim() || "[afiliación]"}
+IDIOMA DE LA CARTA: ${$("#lLang").value === "en" ? "inglés" : "español"}
+TIPO DE ARTÍCULO: ${$("#cType").value}
+
+MANUSCRITO
+Título: ${f.titulo}
+Diseño: ${f.diseno} · Población: ${f.poblacion} · Variable principal: ${f.variable_principal}
+Resumen: ${f.resumen_120}
+Motivo de encaje detectado: ${j.why}`}
+    ], false);
+    $("#lBody").textContent = txt.trim();
+  }catch(err){ alert("No se pudo redactar: " + err.message); }
+  finally{ $("#lStat").textContent = ""; }
+};
+$("#lCopy").onclick = () => { navigator.clipboard.writeText($("#lBody").innerText); $("#lCopy").textContent="Copiado"; setTimeout(()=>$("#lCopy").textContent="Copiar",1200); };
+$("#lDocx").onclick = async () => {
+  const D = window.docx, j = S.active;
+  const paras = $("#lBody").innerText.split(/\n{2,}/).map(p => new D.Paragraph({
+    children:[new D.TextRun({text:p.trim(), font:"Times New Roman", size:24})], spacing:{after:200, line:360} }));
+  const doc = new D.Document({ sections:[{ children: paras }] });
+  const blob = await D.Packer.toBlob(doc);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "cover_letter_" + (j?j.name.replace(/[^\w]+/g,"_").slice(0,40):"revista") + ".docx";
+  a.click();
+};
+
+/* ---------- IndexedDB ---------- */
+let DB = null;
+function db(){ return new Promise((res,rej) => { if(DB) return res(DB);
+  const r = indexedDB.open("revistafit",1);
+  r.onupgradeneeded = () => { if(!r.result.objectStoreNames.contains("busquedas")) r.result.createObjectStore("busquedas",{keyPath:"id"}); };
+  r.onsuccess = () => { DB = r.result; res(DB); }; r.onerror = () => rej(r.error); }); }
+async function tx(mode, fn){ const d = await db(); return new Promise((res,rej) => { const t = d.transaction("busquedas", mode); const q = fn(t.objectStore("busquedas")); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }); }
+async function saveProject(){
+  const id = S.projectId || ("b" + Date.now()); S.projectId = id;
+  await tx("readwrite", s => s.put({ id, titulo: (S.fiche && S.fiche.titulo) || "sin título", fecha:new Date().toISOString(), text:S.text, fiche:S.fiche, journals:S.journals }));
+}
+$("#btnProj").onclick = async () => {
+  const all = await tx("readonly", s => s.getAll());
+  $("#projList").innerHTML = all.length ? all.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(p => `
+    <div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)">
+      <div style="flex:1"><div style="font-size:13.5px">${esc(p.titulo)}</div>
+      <div class="hint">${new Date(p.fecha).toLocaleString("es-ES")} · ${p.journals.length} revistas</div></div>
+      <button class="btn sm" data-open="${p.id}">Abrir</button>
+      <button class="btn ghost sm" data-del="${p.id}">Borrar</button></div>`).join("")
+    : `<p class="hint">Todavía no hay búsquedas guardadas.</p>`;
+  $("#projList").querySelectorAll("[data-open]").forEach(b => b.onclick = async () => {
+    const p = await tx("readonly", s => s.get(b.dataset.open));
+    S.projectId=p.id; S.text=p.text; S.fiche=p.fiche; S.journals=p.journals;
+    $("#msText").value = p.text; renderFiche(p.fiche);
+    $("#s2").style.display=""; $("#s3").style.display=""; rank();
+    $("#mProj").classList.remove("on"); $("#s3").scrollIntoView({behavior:"smooth"});
+  });
+  $("#projList").querySelectorAll("[data-del]").forEach(b => b.onclick = async () => { await tx("readwrite", s => s.delete(b.dataset.del)); $("#btnProj").click(); });
+  $("#mProj").classList.add("on");
+};
+
+loadCfg();
+</script>
+</body>
+</html>
